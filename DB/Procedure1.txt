@@ -1,0 +1,23 @@
+--Recebendo o id de um Atendimento, mostrar o nome de todos os lugares onde o funcionário desse 
+--atendimento trabalha que possuem mais de 2 funcionários trabalhando.
+Create Procedure LugarAtendimentoM1 @id int
+As
+
+select Nome_Lugar
+from 
+(
+	select aux1.Id_Lugar
+	from 
+	(
+		select a.*,el.id_lugar
+		from Atendimento a join Empregados_Lugares el on a.Id_Empregado = el.Id_Empregado
+		where a.Id_Atendimento = @id
+	) aux1
+	join
+	(
+		select Id_Lugar
+		from Empregados_Lugares
+		group by Id_Lugar
+		having count(*) >= 2
+	) aux2 on aux1.Id_Lugar = aux2.Id_Lugar
+) aux3 join Lugares lu on aux3.Id_Lugar = lu.Id_Lugar

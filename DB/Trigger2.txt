@@ -1,0 +1,46 @@
+--Ao remover uma localizacao remove todos os atendimentos efetuados por Empregados que trabalham apenas naquela localizacao depois remove todos os Empregados que trabalhavam apenas naquela localizacao em fim remove todas as relacoes Empregados_Lugares relacionados aquela localizacao
+
+CREATE TRIGGER removerLocal
+ON Lugares INSTEAD OF DELETE
+AS
+
+PRINT 'ASD'
+DELETE Atendimento
+WHERE id_empregado IN (SELECT E.id_empregado
+                       FROM Empregados E 
+                       JOIN (SELECT id_empregado, COUNT(id_lugar) as qtd
+                             FROM Empregados_Lugares
+                             GROUP BY id_empregado
+                             HAVING COUNT(id_lugar) = 1) B 
+                       ON E.Id_empregado = B.Id_empregado
+                       WHERE E.Id_Empregado IN (SELECT Id_Empregado
+                                                FROM Empregados_Lugares
+                                                WHERE Id_Lugar IN (SELECT Id_Lugar
+                                                                   FROM deleted))
+                       
+                      )
+                     PRINT 'ASD'   
+DELETE Empregados
+WHERE Id_Empregado IN (SELECT E.Id_Empregado
+                      FROM Empregados E 
+                      JOIN (SELECT Id_Empregado, qtd = COUNT(Id_lugar)
+                            FROM Empregados_Lugares
+                            GROUP BY Id_Empregado) B 
+                      ON E.Id_empregado = B.Id_empregado
+                      WHERE B.qtd = 1 AND E.Id_Empregado IN (SELECT Id_Empregado
+                                                               FROM Empregados_Lugares
+                                                               WHERE Id_Lugar IN (SELECT Id_Lugar
+                                                                                 FROM deleted)))
+
+																				 PRINT 'ASD'
+DELETE Empregados_Lugares
+WHERE Id_Lugar IN (SELECT Id_Lugar
+                   FROM Lugares
+                   WHERE Id_Lugar IN (SELECT Id_Lugar
+                                        FROM deleted))
+
+DELETE Lugares
+WHERE Id_Lugar IN (SELECT Id_Lugar
+                   FROM Lugares
+                   WHERE Id_Lugar IN (SELECT Id_Lugar
+                                        FROM deleted))

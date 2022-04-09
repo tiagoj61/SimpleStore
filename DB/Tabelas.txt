@@ -1,0 +1,20 @@
+CREATE TABLE Empregados(
+    Id_Empregado int PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    First_name varchar (30),
+    Last_name varchar (30),
+    Salario int
+);
+CREATE TABLE Lugares(
+    Id_Lugar int PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    Nome_lugar varchar (30),
+    Cnpj varchar (30)
+);
+CREATE TABLE Atendimento(
+    Id_Atendimento int PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    Nome_cliente varchar (30),
+    Id_Empregado int FOREIGN KEY REFERENCES Empregados(Id_Empregado)
+);
+CREATE TABLE Empregados_Lugares(
+    Id_Empregado int FOREIGN KEY REFERENCES Empregados(Id_Empregado) NOT NULL,
+    Id_Lugar int FOREIGN KEY REFERENCES Lugares(Id_Lugar) NOT NULL
+);

@@ -1,0 +1,27 @@
+--Quando um Empregado for removido todos os Empregados com o mesmo sobrenome ganham um aumento de 50% do salario
+--Remove todos os atendimentos e relacoes Empregados_Lugares dos Empregados removidos
+
+CREATE TRIGGER removerPromocao 
+ON atendimento INSTEAD OF DELETE
+AS
+UPDATE Empregados
+SET salario = salario * 1.5
+WHERE ultimo_nome in (SELECT ultimo_nome
+                    FROM deleted);
+
+DELETE Atendimento
+WHERE Id_Empregado IN (SELECT Id_Empregado
+                       FROM Atendimento
+                       GROUP BY Id_Empregado
+                       HAVING Id_Empregado IN (SELECT Id_Empregado
+                                                FROM deleted))
+                       
+DELETE Empregados_Lugares
+WHERE Id_Empregado IN (SELECT Id_Empregado
+                       FROM deleted)
+
+DELETE Empregados
+WHERE id_empregado IN (SELECT id_empregado
+                   FROM Empregados
+                   WHERE id_empregado IN (SELECT id_empregado
+                                        FROM deleted))

@@ -1,0 +1,16 @@
+--Recebendo um cnpj como parâmetro: Mostrar o nome de todos os clientes que aparecem mais de duas vezes em 
+--atendimentos com funcionários que trabalham no lugar com o cnpj especificado.
+Create Procedure LugarAtendimentoM2 @cnpj varchar(30)
+As
+
+select Nome_Cliente
+from 
+(
+	select Id_Empregado
+	from Empregados_Lugares el join Lugares lu on el.Id_Lugar = lu.Id_Lugar
+	where lu.Cnpj = @cnpj
+) aux1
+join
+Atendimento a on aux1.Id_Empregado = a.Id_Empregado
+group by Nome_Cliente
+having count(Id_Atendimento) >= 2
